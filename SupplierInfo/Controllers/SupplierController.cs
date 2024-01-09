@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SupplierInfo.DatabaseContext;
 using SupplierInfo.Models;
 using SupplierInfo.Services;
+using System.Configuration;
 using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,11 +16,12 @@ namespace SupplierInfo.Controllers
     public class SupplierController : ControllerBase
     {
         private readonly DatabaseContextInfo _context;
-        string path = @"C:/Users/Admin/Desktop/Json.json";
+        private readonly IConfiguration _config;
 
-        public SupplierController(DatabaseContextInfo context)
+        public SupplierController(DatabaseContextInfo context , IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
         /// <summary>
         /// Get Suppliers Hotel List from JSON
@@ -30,6 +32,7 @@ namespace SupplierInfo.Controllers
         {
             try
             {
+                string path = _config.GetValue<string>("Files:SupplierJsonFile");
                 if (!System.IO.File.Exists(path))
                 {
                     return new Response { StatusCode = (int)HttpStatusCode.NotFound, Message = "File Not Found", ResponseBody = null };
@@ -99,6 +102,8 @@ namespace SupplierInfo.Controllers
         [HttpPost("PostHotelDataFromJson")]
         public Response PostHotelsFromSupliersList()
         {
+            string path = _config.GetValue<string>("Files:SupplierJsonFile");
+
             try
             {
                 if (!System.IO.File.Exists(path))
